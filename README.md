@@ -120,6 +120,14 @@ beide PDF gleichzeitig.
 
 Neuer Jahrgang: `datensatz:` in der `config.js` hochzählen — siehe `SETUP.md`.
 
+### Nach einer Änderung an CSS oder JavaScript
+
+Browser halten die Dateien bis zu zehn Minuten fest. Damit eine Korrektur
+sofort bei allen ankommt, steht hinter jeder eigenen Datei eine
+Versionskennung, z. B. `js/app.js?v=2026-09-08-3`. Diese Kennung in allen
+HTML-Dateien auf denselben neuen Wert setzen (Datum plus laufende Nummer),
+dann laden alle Geräte die neue Fassung beim nächsten Aufruf.
+
 ## Datenbank
 
 Damit **alle Geräte denselben Stand sehen**, braucht die Seite eine gemeinsame
@@ -127,8 +135,10 @@ Datenbank. Ohne sie läuft alles im **Demo-Modus**: bedienbar zum Ausprobieren,
 aber jedes Gerät speichert nur für sich. Darauf weisen Schülerseite und
 Lehrkraft-Bereich dann mit einem roten Hinweis hin.
 
-Einrichtung: **`einrichten.html`** öffnen (oder **`SETUP.md`** lesen) — Firebase
-Firestore, kostenlos, Serverstandort Europa, etwa zehn Minuten. Die Seite testet
+Eingerichtet ist Firebase Firestore im Projekt `projektkompetenz-f1124`,
+Standort **europe-west10 (Berlin)** — die Daten liegen in Deutschland, Tarif
+Spark (kostenlos), Google Analytics aus. Neu einrichten oder wechseln:
+**`einrichten.html`** (oder **`SETUP.md`**). Die Seite testet
 die Verbindung anschließend wirklich: Sie schreibt in die Datenbank und liest
 vom Server zurück. Dieselbe Prüfung gibt es im Lehrkraft-Bereich jederzeit unter
 **PDF & Export → Verbindung prüfen**.

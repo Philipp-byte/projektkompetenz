@@ -24,8 +24,8 @@ Europa. Für 30 Anmeldungen liegt das weit unter jeder Grenze des Gratis-Konting
 
 1. Links im Menü: **Erstellen → Firestore Database**.
 2. **Datenbank erstellen** anklicken.
-3. Standort **eur3 (europe-west)** oder **europe-west3 (Frankfurt)** wählen —
-   die Daten bleiben damit in Europa.
+3. Standort **europe-west10 (Berlin)** wählen — dann liegen die Daten in
+   Deutschland. Dieser Standort lässt sich später **nicht mehr ändern**.
 4. Startmodus: **Im Produktionsmodus starten**.
 
 > Dieser Schritt wird gern übersehen. Ein Firebase-Projekt ohne angelegte
