@@ -69,6 +69,13 @@ window.Store = (function () {
     return C.projekte.find(p => p.id === id) || null;
   }
 
+  /** Ist ein Projekt für diese Klasse offen? Ohne nurKlassen: für alle.
+      Gilt nur für die Selbstanmeldung – die Lehrkraft darf jeden zuordnen. */
+  function klasseDarf(projekt, klasse) {
+    if (!projekt || !projekt.nurKlassen || !projekt.nurKlassen.length) return true;
+    return projekt.nurKlassen.indexOf(klasse) > -1;
+  }
+
   /** Belegung eines Projekts: benutzt, maximal (inkl. Aufstockung), frei. */
   function belegung(stand, projektId) {
     const p = projektById(projektId);
@@ -237,6 +244,7 @@ window.Store = (function () {
 
       const projekt = projektById(projektId);
       if (!projekt) throw new Error('Dieses Projekt gibt es nicht.');
+      if (!klasseDarf(projekt, klasse)) throw new Error('KLASSE');
 
       const vorher = stand.anmeldungen[key] || null;
       if (vorher && vorher.projektId === projektId) return { key, unveraendert: true };
@@ -370,6 +378,44 @@ window.Store = (function () {
     });
   }
 
+  /**
+   * Echter Schreib-/Lesetest gegen die Datenbank.
+   * Schreibt einen neuen Zeitstempel und liest ihn ausdrücklich vom Server
+   * zurück (nicht aus dem Zwischenspeicher). Nur wenn das klappt, sehen
+   * wirklich alle Geräte denselben Stand.
+   */
+  async function verbindungTesten() {
+    if (modus !== 'online') {
+      return { ok: false, modus, grund: 'demo' };
+    }
+    /* Ohne Zeitlimit würde der Test bei Netzproblemen ewig hängen –
+       Firestore versucht es im Hintergrund unbegrenzt weiter.            */
+    const zeitlimit = (versprechen, ms) => Promise.race([
+      versprechen,
+      new Promise((_, x) => setTimeout(() => x(new Error(
+        'Keine Antwort innerhalb von ' + Math.round((ms || 12000) / 1000) + ' Sekunden.')), ms || 12000))
+    ]);
+
+    let r;
+    try { r = await zeitlimit(schreiben(() => true)); }
+    catch (e) { return { ok: false, modus, fehler: e.message }; }
+    if (!r.ok) return { ok: false, modus, fehler: r.fehler };
+
+    try {
+      const snap = await zeitlimit(ref.get({ source: 'server' }));
+      const d = snap.exists ? snap.data() : {};
+      return {
+        ok: !!snap.exists, modus,
+        projekt: C.firebase.projectId,
+        datensatz: C.datensatz,
+        anmeldungen: Object.keys(d.anmeldungen || {}).length,
+        stand: d.stand || null
+      };
+    } catch (e) {
+      return { ok: false, modus, fehler: e && e.message ? e.message : String(e) };
+    }
+  }
+
   /* ------------------------------------------------------ Eigene Anmeldung */
 
   function eigenerSchluesselLesen() {
@@ -385,7 +431,9 @@ window.Store = (function () {
   return {
     init, schreiben,
     anmelden, verschieben, eintragen, entfernen, plaetzeAendern, sperren, allesLoeschen,
-    belegung, teilnehmer, alleAnmeldungen, projektById, schluessel, huebsch, normalisieren,
+    verbindungTesten, istKonfiguriert,
+    belegung, teilnehmer, alleAnmeldungen, projektById, klasseDarf,
+    schluessel, huebsch, normalisieren,
     eigenerSchluesselLesen, eigenerSchluesselMerken, eigenerSchluesselVergessen,
     get modus() { return modus; },
     get stand() { return letzterStand; }

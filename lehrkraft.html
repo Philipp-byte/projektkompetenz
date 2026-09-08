@@ -60,6 +60,8 @@
     <p id="pult-unter">Stand wird geladen …</p>
   </div>
 
+  <div id="verbindungs-banner"></div>
+
   <div class="kacheln">
     <div class="kachel"><b id="z-angemeldet">0</b><span>Angemeldet</span></div>
     <div class="kachel blau"><b id="z-plaetze">0</b><span>Plätze gesamt</span></div>
@@ -125,6 +127,20 @@
         <button class="knopf knopf--leise" id="pdf-beide">Beide PDF auf einmal</button>
         <button class="knopf knopf--leise" id="csv">Als CSV für Excel</button>
       </div>
+    </div>
+
+    <div class="karte">
+      <h2 class="karte-titel">Datenbank</h2>
+      <p style="margin:0 0 12px;color:rgba(242,247,250,.68);font-size:14px">
+        Prüft, ob wirklich alle Geräte auf demselben Stand arbeiten. Der Test
+        schreibt in die Datenbank und liest zurück.
+      </p>
+      <button class="knopf knopf--leise" id="verbindung-pruefen">Verbindung prüfen</button>
+      <div id="verbindung-ergebnis" style="margin-top:12px"></div>
+      <p style="margin:12px 0 0;font-size:13px;color:rgba(242,247,250,.5)">
+        <a href="einrichten.html" style="color:rgba(242,247,250,.7)">Einrichtung öffnen</a>
+        – nötig beim ersten Mal und beim Wechsel auf eine andere Datenbank.
+      </p>
     </div>
 
     <div class="karte">

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071A25">
+<meta name="robots" content="noindex">
+<title>Datenbank einrichten · Projektkompetenz</title>
+<link rel="icon" href="assets/kolping-bildung-logo.png">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .schritt-nr {
+    display: inline-grid; place-items: center;
+    width: 26px; height: 26px; margin-right: 9px;
+    border-radius: 8px; background: var(--orange); color: #fff;
+    font-size: 14px; font-weight: 700;
+  }
+  .karte-titel.mit-nr { text-transform: none; font-size: 16px; letter-spacing: 0; color: var(--schrift); }
+  .karte-titel.mit-nr::after { margin-left: 4px; }
+  textarea {
+    width: 100%; min-height: 150px; padding: 13px 14px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 13px; line-height: 1.5;
+    color: var(--schrift); background: rgba(255,255,255,.07);
+    border: 1px solid var(--kante); border-radius: var(--radius-klein);
+    outline: none; resize: vertical;
+  }
+  textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(238,114,3,.22); }
+  pre.ausgabe {
+    margin: 0; padding: 14px; overflow-x: auto;
+    font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.6;
+    color: #CFE3EE; background: rgba(0,0,0,.28);
+    border: 1px solid var(--kante); border-radius: var(--radius-klein);
+  }
+  ol.klick { margin: 0; padding-left: 20px; font-size: 14.5px; line-height: 1.65; color: var(--schrift-weich); }
+  ol.klick li { margin-bottom: 7px; }
+  ol.klick b { color: var(--schrift); }
+  .werte { display: grid; gap: 6px; margin-top: 12px; }
+  .werte div { display: flex; gap: 10px; font-size: 12.5px; align-items: baseline; }
+  .werte span:first-child { flex: 0 0 130px; color: var(--schrift-leise); font-family: ui-monospace, Consolas, monospace; }
+  .werte span:last-child { flex: 1; min-width: 0; word-break: break-all; font-weight: 600; }
+  .werte .fehlt { color: #FF9AA0; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="kopf">
+  <a class="kopf-zurueck" href="lehrkraft.html" aria-label="Zurück" id="zurueck"></a>
+  <div class="kopf-titel">
+    <b>Datenbank einrichten</b>
+    <span>einmalig, ca. 10 Minuten</span>
+  </div>
+  <div class="logo-feld"><img src="assets/kolping-bildung-logo.png" alt="Kolping Bildung"></div>
+</header>
+
+<main class="huelle">
+  <div class="hero">
+    <span class="marke">Einmalige Einrichtung</span>
+    <h1>Damit <em>alle Geräte</em> dasselbe sehen</h1>
+    <p>Ohne Datenbank speichert jedes Handy nur für sich. Erst mit den paar
+       Angaben von dieser Seite sehen alle Klassen, beide Lehrkräfte und jeder
+       Rechner denselben Stand – in dem Moment, in dem er sich ändert.</p>
+  </div>
+
+  <div class="karte" id="lage"></div>
+
+  <div class="karte">
+    <h2 class="karte-titel mit-nr"><span class="schritt-nr">1</span>Projekt bei Firebase anlegen</h2>
+    <ol class="klick">
+      <li><a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a>
+          öffnen und mit einem Google-Konto anmelden.</li>
+      <li><b>Projekt erstellen</b> → Name <b>projektkompetenz</b> → weiter.</li>
+      <li>Google Analytics <b>ausschalten</b> → <b>Projekt erstellen</b>.</li>
+    </ol>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel mit-nr"><span class="schritt-nr">2</span>Datenbank anlegen</h2>
+    <ol class="klick">
+      <li>Links im Menü: <b>Erstellen → Firestore Database</b>.</li>
+      <li><b>Datenbank erstellen</b> anklicken.</li>
+      <li>Standort <b>eur3</b> oder <b>europe-west3 (Frankfurt)</b> wählen –
+          die Daten bleiben damit in Europa.</li>
+      <li>Startmodus: <b>Im Produktionsmodus starten</b>.</li>
+    </ol>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel mit-nr"><span class="schritt-nr">3</span>Regeln veröffentlichen</h2>
+    <ol class="klick">
+      <li>In Firestore oben auf den Reiter <b>Regeln</b>.</li>
+      <li>Alles markieren, löschen und den Text unten einfügen.</li>
+      <li><b>Veröffentlichen</b> anklicken.</li>
+    </ol>
+    <pre class="ausgabe" id="regeln" style="margin-top:12px"></pre>
+    <button class="knopf knopf--leise knopf--klein" id="regeln-kopieren" style="margin-top:10px">Regeln kopieren</button>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel mit-nr"><span class="schritt-nr">4</span>Zugangsdaten hier einfügen</h2>
+    <ol class="klick" style="margin-bottom:14px">
+      <li>Oben links <b>Zahnrad → Projekteinstellungen</b>.</li>
+      <li>Nach unten zu <b>Meine Apps</b> → auf <b>&lt;/&gt;</b> (Web) klicken.</li>
+      <li>Name <b>Projektkompetenz</b> → <b>App registrieren</b> (Hosting nicht ankreuzen).</li>
+      <li>Den angezeigten Block <b>komplett kopieren</b> und hier einfügen:</li>
+    </ol>
+    <textarea id="eingabe" spellcheck="false" placeholder="const firebaseConfig = {&#10;  apiKey: &quot;AIzaSy…&quot;,&#10;  authDomain: &quot;projektkompetenz-1234.firebaseapp.com&quot;,&#10;  projectId: &quot;projektkompetenz-1234&quot;,&#10;  …&#10;};"></textarea>
+    <div class="werte" id="werte"></div>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel mit-nr"><span class="schritt-nr">5</span>Verbindung wirklich testen</h2>
+    <p style="margin:0 0 12px;color:rgba(242,247,250,.68);font-size:14px">
+      Der Test schreibt einen Probedatensatz in die Datenbank und liest ihn
+      zurück. Klappt das, funktioniert es auch zwischen verschiedenen Geräten.</p>
+    <button class="knopf" id="testen" disabled>Verbindung testen</button>
+    <div id="ergebnis" style="margin-top:14px"></div>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel mit-nr"><span class="schritt-nr">6</span>In die config.js eintragen</h2>
+    <p style="margin:0 0 12px;color:rgba(242,247,250,.68);font-size:14px">
+      Diesen Block in <b>js/config.js</b> einsetzen – er ersetzt dort den
+      vorhandenen Abschnitt <b>firebase: { … }</b>. Danach speichern und
+      hochladen, fertig.</p>
+    <pre class="ausgabe" id="block">Noch nichts eingefügt.</pre>
+    <button class="knopf" id="block-kopieren" style="margin-top:12px" disabled>Block kopieren</button>
+  </div>
+
+  <footer class="fuss">
+    <span>Kolping Bildung · Projektkompetenz</span>
+    <span><a href="lehrkraft.html">Bereich für Lehrkräfte</a></span>
+  </footer>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/store.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const FELDER = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+  let daten = {};
+
+  $('zurueck').innerHTML = UI.symbol('zurueck', 18);
+
+  $('regeln').textContent = [
+    "rules_version = '2';",
+    'service cloud.firestore {',
+    '  match /databases/{database}/documents {',
+    '    match /projektkompetenz/{datensatz} {',
+    '      allow read: if true;',
+    '      allow write: if request.resource.data.keys().hasOnly(',
+    "                        ['anmeldungen', 'log', 'extraPlaetze', 'gesperrt', 'stand'])",
+    '                   && request.resource.data.anmeldungen is map',
+    '                   && request.resource.data.anmeldungen.size() <= 300',
+    '                   && request.resource.data.log.size() <= 150;',
+    '    }',
+    '    match /{document=**} { allow read, write: if false; }',
+    '  }',
+    '}'
+  ].join('\n');
+
+  /* --- Wie steht es gerade? ------------------------------------------- */
+  const fertig = !!(CONFIG.firebase.projectId && CONFIG.firebase.apiKey);
+  $('lage').innerHTML = fertig
+    ? '<div class="hinweis hinweis--gruen">' + UI.symbol('check', 18) +
+      '<div><b>Eingerichtet.</b> Die config.js zeigt auf das Firebase-Projekt ' +
+      '<b>' + UI.sicher(CONFIG.firebase.projectId) + '</b>. Alle Geräte arbeiten auf denselben Daten. ' +
+      'Diese Seite brauchst du nur noch, wenn du die Datenbank wechseln willst.</div></div>'
+    : '<div class="hinweis hinweis--rot">' + UI.symbol('warn', 18) +
+      '<div><b>Noch nicht eingerichtet – die Seite läuft im Demo-Modus.</b> ' +
+      'Jedes Gerät speichert im Moment nur für sich. Für den Einsatz mit den ' +
+      'Klassen müssen die Schritte unten einmal durchlaufen werden.</div></div>';
+
+  /* --- Eingabe auswerten ---------------------------------------------- */
+  function auswerten() {
+    const text = $('eingabe').value;
+    daten = {};
+    FELDER.forEach(f => {
+      const treffer = text.match(new RegExp(f + '\\s*:\\s*["\'`]([^"\'`]+)["\'`]'));
+      if (treffer) daten[f] = treffer[1].trim();
+    });
+
+    $('werte').innerHTML = FELDER.map(f =>
+      '<div><span>' + f + '</span>' +
+      (daten[f] ? '<span>' + UI.sicher(daten[f]) + '</span>'
+                : '<span class="fehlt">fehlt noch</span>') + '</div>').join('');
+
+    const vollstaendig = FELDER.every(f => daten[f]);
+    $('testen').disabled = !vollstaendig;
+    $('block-kopieren').disabled = !vollstaendig;
+
+    $('block').textContent = vollstaendig
+      ? '  firebase: {\n' +
+        FELDER.map(f => "    " + f + ": '" + daten[f] + "'").join(',\n') +
+        '\n  },'
+      : 'Noch nicht vollständig – bitte den kompletten Block aus Firebase einfügen.';
+  }
+
+  $('eingabe').addEventListener('input', auswerten);
+  auswerten();
+
+  /* --- Echter Schreib-/Lesetest --------------------------------------- */
+  function skriptLaden(url) {
+    return new Promise((f, x) => {
+      const s = document.createElement('script');
+      s.src = url; s.onload = f; s.onerror = () => x(new Error('nicht erreichbar: ' + url));
+      document.head.appendChild(s);
+    });
+  }
+
+  /* Firestore versucht es bei falschen Angaben endlos weiter, ohne je einen
+     Fehler zu melden. Ohne Zeitlimit würde der Test ewig laufen.          */
+  function mitZeitlimit(versprechen, ms) {
+    return Promise.race([
+      versprechen,
+      new Promise((_, x) => setTimeout(() => x(new Error('ZEITLIMIT')), ms || 12000))
+    ]);
+  }
+
+  function melden(art, titel, text) {
+    $('ergebnis').innerHTML = '<div class="hinweis hinweis--' + art + '">' +
+      UI.symbol(art === 'gruen' ? 'check' : art === 'rot' ? 'warn' : 'info', 18) +
+      '<div><b>' + titel + '</b> ' + text + '</div></div>';
+  }
+
+  $('testen').addEventListener('click', async () => {
+    const knopf = $('testen');
+    knopf.disabled = true; knopf.textContent = 'wird geprüft …';
+    melden('', 'Test läuft.', 'Verbindung wird aufgebaut …');
+    try {
+      const basis = 'https://www.gstatic.com/firebasejs/10.12.5/';
+      if (!window.firebase || !window.firebase.firestore) {
+        await skriptLaden(basis + 'firebase-app-compat.js');
+        await skriptLaden(basis + 'firebase-firestore-compat.js');
+      }
+      const app = firebase.initializeApp(daten, 'probe-' + Date.now());
+      const db = firebase.firestore(app);
+      const ref = db.collection('projektkompetenz').doc('verbindungstest');
+
+      const marke = new Date().toISOString();
+      await mitZeitlimit(
+        ref.set({ anmeldungen: {}, log: [], extraPlaetze: {}, gesperrt: false, stand: marke }));
+      const zurueck = await mitZeitlimit(ref.get());
+
+      if (zurueck.exists && zurueck.data().stand === marke) {
+        melden('gruen', 'Es funktioniert.',
+          'Geschrieben und zurückgelesen aus dem Projekt <b>' + UI.sicher(daten.projectId) + '</b>. ' +
+          'Ab jetzt sehen alle Geräte denselben Stand. Fehlt nur noch Schritt 6.');
+      } else {
+        melden('rot', 'Merkwürdig.', 'Der Schreibvorgang ging durch, beim Zurücklesen kam aber nichts an. Bitte noch einmal versuchen.');
+      }
+    } catch (e) {
+      const m = String(e && e.message || e);
+      let rat = 'Meldung: ' + UI.sicher(m);
+      if (m === 'ZEITLIMIT') {
+        rat = 'Die Datenbank hat nicht geantwortet. Das passiert, wenn die ' +
+              'Zugangsdaten zu einem Projekt gehören, in dem noch keine ' +
+              'Firestore-Datenbank angelegt ist (Schritt 2), oder wenn gerade ' +
+              'keine Internetverbindung besteht.';
+      } else if (/permission|insufficient/i.test(m)) {
+        rat = 'Die Datenbank verweigert das Schreiben. Das liegt fast immer an Schritt 3 – ' +
+              'die Regeln sind noch nicht oder noch nicht richtig veröffentlicht.';
+      } else if (/not.*found|does not exist|NOT_FOUND/i.test(m)) {
+        rat = 'Es wurde noch keine Firestore-Datenbank angelegt. Das ist Schritt 2.';
+      } else if (/api.?key|invalid/i.test(m)) {
+        rat = 'Die Zugangsdaten stimmen nicht. Bitte den Block aus Firebase noch einmal komplett kopieren.';
+      }
+      melden('rot', 'Hat nicht geklappt.', rat);
+    } finally {
+      knopf.disabled = false; knopf.textContent = 'Verbindung testen';
+    }
+  });
+
+  /* --- Kopieren -------------------------------------------------------- */
+  async function kopieren(text, name) {
+    try { await navigator.clipboard.writeText(text); UI.meldung(name + ' kopiert.', 'gut'); }
+    catch (e) { UI.meldung('Kopieren ging nicht – bitte von Hand markieren.', 'warn'); }
+  }
+  $('regeln-kopieren').addEventListener('click', () => kopieren($('regeln').textContent, 'Regeln'));
+  $('block-kopieren').addEventListener('click', () => kopieren($('block').textContent, 'Block'));
+})();
+</script>
+</body>
+</html>

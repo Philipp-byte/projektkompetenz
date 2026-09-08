@@ -49,10 +49,35 @@
 
   function statusZeigen(modus) {
     const el = $('status'), text = $('status-text');
+    const banner = $('verbindungs-banner');
     el.className = 'status';
-    if (modus === 'online') text.textContent = 'live verbunden';
-    else if (modus === 'demo') { el.classList.add('demo'); text.textContent = 'Demo-Modus (nur dieses Gerät)'; }
-    else { el.classList.add('aus'); text.textContent = 'keine Verbindung'; }
+
+    if (modus === 'online') {
+      text.textContent = 'live verbunden';
+      banner.innerHTML = '';
+      return;
+    }
+
+    if (modus === 'demo') {
+      el.classList.add('demo');
+      text.textContent = 'Demo-Modus (nur dieses Gerät)';
+      banner.innerHTML = '<div class="karte" style="border-color:rgba(229,72,77,.45);margin-bottom:14px">' +
+        '<div class="hinweis hinweis--rot" style="margin-bottom:12px">' + UI.symbol('warn', 18) +
+        '<div><b>Achtung: keine gemeinsame Datenbank.</b> Jedes Gerät speichert ' +
+        'im Moment nur für sich. Was eine Klasse auf ihren Handys einträgt, ' +
+        'kommt hier nicht an – und umgekehrt. Vor dem Einsatz muss das einmal ' +
+        'eingerichtet werden, danach sehen alle denselben Stand.</div></div>' +
+        '<a class="knopf" href="einrichten.html" style="text-decoration:none">Jetzt einrichten – ca. 10 Minuten</a>' +
+        '</div>';
+    } else {
+      el.classList.add('aus');
+      text.textContent = 'keine Verbindung';
+      banner.innerHTML = '<div class="karte" style="border-color:rgba(229,72,77,.45);margin-bottom:14px">' +
+        '<div class="hinweis hinweis--rot">' + UI.symbol('warn', 18) +
+        '<div><b>Die Datenbank antwortet nicht.</b> Meist stimmen die Regeln nicht ' +
+        'oder es fehlt die Internetverbindung. Der Verbindungstest unter ' +
+        '„PDF &amp; Export" sagt genauer, woran es liegt.</div></div></div>';
+    }
   }
 
   function alesZeichnen(stand) {
@@ -113,6 +138,8 @@
         '<div class="gruppe-kopf">' +
           '<h3>' + UI.sicher(p.name) + '</h3>' +
           '<span class="mini mini--lehrkraft">' + UI.sicher(UI.lehrkraftName(p.lehrkraft)) + '</span>' +
+          (p.nurKlassen && p.nurKlassen.length
+            ? '<span class="mini mini--hinweis">Anmeldung nur ' + UI.sicher(p.nurKlassen.join(' und ')) + '</span>' : '') +
           (b.aufgestockt ? '<span class="mini mini--hinweis">+' + b.aufgestockt + ' aufgestockt</span>' : '') +
           '<span class="plaetze-regler">' +
             '<button data-plus="' + p.id + '" data-diff="-1" aria-label="Ein Platz weniger">−</button>' +
@@ -374,6 +401,34 @@
         r = await Store.eintragen(Object.assign({}, daten, { limitUeberschreiben: true }));
       }
       UI.meldung(r.ok ? 'Eingetragen.' : (r.fehler || 'Hat nicht geklappt.'), r.ok ? 'gut' : 'fehler');
+    });
+
+    /* Verbindung wirklich prüfen: schreiben und vom Server zurücklesen */
+    $('verbindung-pruefen').addEventListener('click', async e => {
+      const knopf = e.currentTarget, ziel = $('verbindung-ergebnis');
+      knopf.disabled = true; knopf.textContent = 'wird geprüft …';
+      ziel.innerHTML = '';
+      const r = await Store.verbindungTesten();
+
+      if (r.ok) {
+        ziel.innerHTML = '<div class="hinweis hinweis--gruen">' + UI.symbol('check', 18) +
+          '<div><b>Alles in Ordnung.</b> Geschrieben und vom Server zurückgelesen: ' +
+          'Projekt <b>' + UI.sicher(r.projekt) + '</b>, Datensatz <b>' + UI.sicher(r.datensatz) + '</b>, ' +
+          '<b>' + r.anmeldungen + '</b> Anmeldungen. Jedes Gerät, das die Seite öffnet, ' +
+          'sieht genau diesen Stand.</div></div>';
+      } else if (r.grund === 'demo') {
+        ziel.innerHTML = '<div class="hinweis hinweis--rot">' + UI.symbol('warn', 18) +
+          '<div><b>Demo-Modus.</b> Es ist keine Datenbank hinterlegt – die Daten ' +
+          'bleiben auf diesem Gerät. <a href="einrichten.html" style="color:#FFB37A">Hier einrichten</a>, ' +
+          'dann arbeiten alle Geräte zusammen.</div></div>';
+      } else {
+        ziel.innerHTML = '<div class="hinweis hinweis--rot">' + UI.symbol('warn', 18) +
+          '<div><b>Die Datenbank antwortet nicht.</b> Meldung: ' +
+          UI.sicher(r.fehler || 'unbekannt') + '<br>Häufigste Ursache: Die Regeln ' +
+          'sind noch nicht veröffentlicht. Schritt 3 unter ' +
+          '<a href="einrichten.html" style="color:#FFB37A">Einrichten</a>.</div></div>';
+      }
+      knopf.disabled = false; knopf.textContent = 'Verbindung prüfen';
     });
 
     /* Anmeldung sperren */

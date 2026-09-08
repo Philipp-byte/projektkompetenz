@@ -15,7 +15,6 @@
     gewaehlt: null,
     key: null,
     filter: 'alle',
-    offen: {},
     bereit: false,
     sendet: false
   };
@@ -83,8 +82,9 @@
       const b = Store.belegung(stand, p.id);
       const istMeins = p.id === meinProjekt;
       const istGewaehlt = p.id === zustand.gewaehlt;
+      const falscheKlasse = !Store.klasseDarf(p, zustand.klasse);
       const voll = b.frei <= 0 && !istMeins;
-      const offen = !!zustand.offen[p.id];
+      const gesperrt = (voll || falscheKlasse) && !istMeins;
 
       const anteil = Math.min(100, Math.round((b.benutzt / Math.max(1, b.max)) * 100));
       const balkenKlasse = istMeins ? 'meins' : (b.frei <= 0 ? 'voll' : '');
@@ -93,23 +93,23 @@
       if (p.badge) marken.push('<span class="mini mini--hinweis">' + UI.sicher(p.badge) + '</span>');
       marken.push('<span class="mini mini--lehrkraft">' + UI.symbol('leute', 12) + ' ' +
                   UI.sicher(UI.lehrkraftName(p.lehrkraft)) + '</span>');
+      if (falscheKlasse) marken.push('<span class="mini mini--voll">Nur ' +
+                  UI.sicher(p.nurKlassen.join(' und ')) + '</span>');
       if (istMeins) marken.push('<span class="mini mini--gruen">' + UI.symbol('check', 12) + ' Dein Projekt</span>');
       else if (voll) marken.push('<span class="mini mini--voll">Belegt</span>');
-      else if (b.frei === 1) marken.push('<span class="mini mini--hinweis">Nur noch 1 Platz</span>');
+      else if (!falscheKlasse && b.frei === 1) marken.push('<span class="mini mini--hinweis">Nur noch 1 Platz</span>');
 
       return '' +
-      '<div class="projekt' + (istGewaehlt ? ' gewaehlt' : '') + (voll ? ' voll' : '') +
-           (istMeins ? ' meins' : '') + (offen ? ' offen' : '') + '"' +
-        ' role="button" tabindex="' + (voll ? '-1' : '0') + '"' +
+      '<div class="projekt' + (gesperrt ? ' voll' : '') + (istMeins ? ' meins' : '') + '"' +
+        ' role="button" tabindex="' + (gesperrt ? '-1' : '0') + '"' +
         ' aria-pressed="' + istGewaehlt + '"' +
-        ' aria-disabled="' + voll + '"' +
+        ' aria-disabled="' + gesperrt + '"' +
         ' data-projekt="' + p.id + '">' +
 
         '<div class="projekt-kopf">' +
           '<div class="projekt-symbol">' + UI.symbol(p.icon, 22) + '</div>' +
           '<div class="projekt-text">' +
             '<h3 class="projekt-name">' + UI.sicher(p.name) + '</h3>' +
-            '<p class="projekt-klartext">' + UI.sicher(p.klartext) + '</p>' +
           '</div>' +
         '</div>' +
 
@@ -119,15 +119,6 @@
           '<span class="balken"><i class="' + balkenKlasse + '" style="width:' + anteil + '%"></i></span>' +
           '<span class="balken-zahl">' + b.benutzt + ' / ' + b.max + '</span>' +
         '</div>' +
-
-        '<button type="button" class="mehr-schalter" data-mehr="' + p.id + '" ' +
-          'aria-expanded="' + offen + '">' +
-          (offen ? 'Weniger' : 'Mehr dazu') + UI.symbol('chevron', 14) +
-        '</button>' +
-
-        '<div class="projekt-mehr"><ul>' +
-          p.details.map(d => '<li>' + UI.sicher(d) + '</li>').join('') +
-        '</ul></div>' +
       '</div>';
     }).join('');
 
@@ -136,13 +127,6 @@
   }
 
   document.addEventListener('click', e => {
-    const mehr = e.target.closest('[data-mehr]');
-    if (mehr) {
-      const id = mehr.dataset.mehr;
-      zustand.offen[id] = !zustand.offen[id];
-      projekteZeichnen();
-      return;
-    }
     const karte = e.target.closest('[data-projekt]');
     if (karte && zustand.ansicht === 'projekte') projektAntippen(karte.dataset.projekt);
   });
@@ -150,7 +134,7 @@
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     const karte = e.target.closest && e.target.closest('[data-projekt]');
-    if (karte && zustand.ansicht === 'projekte' && !e.target.closest('[data-mehr]')) {
+    if (karte && zustand.ansicht === 'projekte') {
       e.preventDefault();
       projektAntippen(karte.dataset.projekt);
     }
@@ -161,8 +145,14 @@
     if (stand.gesperrt) { UI.meldung('Die Anmeldung ist geschlossen.', 'warn'); return; }
 
     const meins = zustand.key ? stand.anmeldungen[zustand.key] : null;
-    const b = Store.belegung(stand, id);
-    if (b.frei <= 0 && (!meins || meins.projektId !== id)) {
+    const schonDrin = meins && meins.projektId === id;
+    const p = Store.projektById(id);
+
+    if (!schonDrin && !Store.klasseDarf(p, zustand.klasse)) {
+      UI.meldung('Dieses Projekt ist nur für ' + p.nurKlassen.join(' und ') + '.', 'warn');
+      return;
+    }
+    if (!schonDrin && Store.belegung(stand, id).frei <= 0) {
       UI.meldung('Dieses Projekt ist leider voll.', 'warn');
       return;
     }
@@ -230,7 +220,6 @@
       zeile('Name', a.vorname + ' ' + a.nachname) +
       zeile('Klasse', a.klasse) +
       zeile('Projekt', p ? p.name : '–') +
-      zeile('Worum es geht', p ? p.klartext : '–') +
       zeile('Betreuung', p ? UI.lehrkraftName(p.lehrkraft) : '–') +
       zeile('Zuletzt geändert', UI.zeitpunkt(a.geaendert));
 
@@ -317,7 +306,12 @@
       zustand.sendet = false;
 
       if (!ergebnis.ok) {
-        if (ergebnis.fehler === 'VOLL') {
+        if (ergebnis.fehler === 'KLASSE') {
+          const p = Store.projektById(zustand.gewaehlt);
+          UI.meldung('Dieses Projekt ist nur für ' + p.nurKlassen.join(' und ') + '.', 'fehler');
+          zustand.gewaehlt = null;
+          projekteZeichnen();
+        } else if (ergebnis.fehler === 'VOLL') {
           UI.meldung('Zu spät – der letzte Platz ist gerade weg. Bitte wähle ein anderes Projekt.', 'fehler');
           zustand.gewaehlt = null;
           projekteZeichnen();
@@ -368,10 +362,34 @@
 
   function statusZeigen(modus) {
     const el = $('status'), text = $('status-text');
+    const banner = $('demo-banner');
     el.className = 'status';
-    if (modus === 'online') { text.textContent = 'live verbunden'; }
-    else if (modus === 'demo') { el.classList.add('demo'); text.textContent = 'Demo-Modus (nur dieses Gerät)'; }
-    else { el.classList.add('aus'); text.textContent = 'keine Verbindung'; }
+
+    if (modus === 'online') {
+      text.textContent = 'live verbunden';
+      banner.hidden = true;
+      return;
+    }
+
+    /* Ohne Datenbank landet die Anmeldung nirgends. Das darf niemand
+       übersehen – deshalb steht es groß auf der Seite, nicht nur unten.   */
+    if (modus === 'demo') {
+      el.classList.add('demo');
+      text.textContent = 'Demo-Modus (nur dieses Gerät)';
+      banner.innerHTML = '<div class="hinweis hinweis--rot">' + UI.symbol('warn', 18) +
+        '<div><b>Diese Seite ist noch nicht scharf geschaltet.</b> Was du hier ' +
+        'einträgst, bleibt vorerst auf deinem eigenen Gerät und kommt noch nicht ' +
+        'bei der Lehrkraft an. Zum Ausprobieren kannst du trotzdem alles benutzen.</div></div>';
+      banner.hidden = false;
+    } else {
+      el.classList.add('aus');
+      text.textContent = 'keine Verbindung';
+      banner.innerHTML = '<div class="hinweis hinweis--rot">' + UI.symbol('warn', 18) +
+        '<div><b>Keine Verbindung zur Datenbank.</b> Bitte kurz warten und die ' +
+        'Seite neu laden. Wenn es weiter nicht geht, bei Frau Thornton oder ' +
+        'Herrn Riegert melden.</div></div>';
+      banner.hidden = false;
+    }
   }
 
   /* ---------------------------------------------------------------- Start */

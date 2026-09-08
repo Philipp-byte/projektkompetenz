@@ -50,187 +50,107 @@ window.CONFIG = {
   datensatz: 'board-2026',
 
   /* --- Projekte -----------------------------------------------------------
-     id        : darf später nicht mehr geändert werden (interner Schlüssel)
-     name      : große Überschrift auf der Karte
-     klartext  : erklärender Zusatz – damit klar ist, worum es geht
-     plaetze   : maximale Teilnehmerzahl
-     lehrkraft : thornton | riegert | beide
-     details   : Stichpunkte in der Detailansicht
-     badge     : optionaler Hinweis oben auf der Karte                       */
+     id         : darf später nicht mehr geändert werden (interner Schlüssel)
+     name       : steht auf der Karte – sonst nichts, bewusst ohne Beschreibung
+     plaetze    : maximale Teilnehmerzahl
+     lehrkraft  : thornton | riegert | beide
+     icon       : Symbol auf der Karte
+     badge      : optionaler Hinweis oben auf der Karte
+     nurKlassen : wenn gesetzt, dürfen sich nur diese Klassen eintragen
+                  (die Lehrkraft darf trotzdem jeden zuordnen)              */
   projekte: [
     {
       id: 'mission-2030',
-      name: 'Mission 2030',
-      klartext: 'SDGs – ein Projekt aus den Nachhaltigkeitszielen entwickeln',
+      name: 'SDGs',
       plaetze: 3,
       lehrkraft: 'thornton',
-      icon: 'globe',
-      details: [
-        'Aus den 17 Zielen der UN ein eigenes Projekt ableiten',
-        'Ziel, Zielgruppe und Wirkung selbst festlegen',
-        'Umsetzung an der Schule oder im Stadtteil'
-      ]
+      icon: 'globe'
     },
     {
       id: 'social-media',
-      name: 'Signal',
-      klartext: 'Social-Media-Studio: Kanal planen, Inhalte produzieren',
+      name: 'Social-Media',
       plaetze: 2,
       lehrkraft: 'beide',
       icon: 'signal',
-      badge: 'Für das 1. Jahr',
-      details: [
-        'Redaktionsplan und Zielgruppe festlegen',
-        'Reels, Posts und Grafiken selbst produzieren',
-        'Reichweite messen und auswerten'
-      ]
+      nurKlassen: ['BKW 16']
     },
     {
       id: 'home-it',
-      name: 'Homebase',
-      klartext: 'Home-IT-Kit aufbauen + 3D-Projektor',
+      name: 'Home-IT Kit + 3D-Projektor',
       plaetze: 2,
       lehrkraft: 'riegert',
-      icon: 'chip',
-      details: [
-        'Eigenes Home-IT-Kit zusammenstellen und einrichten',
-        '3D-Projektor aufbauen und in Betrieb nehmen',
-        'Anleitung für andere schreiben'
-      ]
+      icon: 'chip'
     },
     {
       id: 'car-kit',
-      name: 'Autopilot',
-      klartext: 'Car-Kit + Roboterarm bauen und programmieren',
+      name: 'Car-Kit + Roboterarm',
       plaetze: 2,
       lehrkraft: 'riegert',
-      icon: 'car',
-      details: [
-        'Fahrzeug-Kit montieren und zum Fahren bringen',
-        'Roboterarm ansteuern',
-        'Eigene Fahr- und Greifroutinen programmieren'
-      ]
+      icon: 'car'
     },
     {
       id: 'robotik',
-      name: 'Robotik-Lab',
-      klartext: 'Roboter bauen, steuern und eine Aufgabe lösen lassen',
+      name: 'Roboter',
       plaetze: 2,
       lehrkraft: 'riegert',
-      icon: 'robot',
-      details: [
-        'Roboter aufbauen und in Betrieb nehmen',
-        'Sensoren und Motoren ansteuern',
-        'Am Ende eine selbst gestellte Aufgabe lösen'
-      ]
+      icon: 'robot'
     },
     {
       id: 'schul-ki',
-      name: 'Schul-KI',
-      klartext: 'Eine eigene KI für unsere Schule entwickeln',
+      name: 'Schul-KI entwickeln',
       plaetze: 3,
       lehrkraft: 'riegert',
-      icon: 'brain',
-      details: [
-        'Sinnvollen Anwendungsfall für die Schule finden',
-        'KI mit eigenen Inhalten füttern und testen',
-        'Grenzen, Datenschutz und Verantwortung klären'
-      ]
+      icon: 'brain'
     },
     {
       id: 'vr-360',
-      name: 'Deep Dive',
-      klartext: 'VR-Brille: Szenario in Blender bauen + 360-Grad-Video',
+      name: 'VR-Brille (Blender) + 360° Video',
       plaetze: 2,
       lehrkraft: 'beide',
-      icon: 'vr',
-      details: [
-        'Eigene 3D-Szene in Blender modellieren',
-        'Szene für die VR-Brille aufbereiten',
-        '360-Grad-Video drehen und schneiden'
-      ]
+      icon: 'vr'
     },
     {
       id: 'makerspace',
-      name: 'Makerspace',
-      klartext: '3D-Druck: Produkt entwickeln, Shop-Homepage und Werbung',
+      name: '3D-Druck',
       plaetze: 4,
       lehrkraft: 'riegert',
-      icon: 'cube',
-      badge: 'Größtes Team',
-      details: [
-        'Produkt entwerfen und im 3D-Drucker drucken',
-        'Homepage bauen: Produktdetails, Bestellformular, Werbung',
-        'Teilbereich T-Shirts: Vorderseite ist vorgegeben, die Rückseite wird individuell bestellt – das Team entwickelt die Druckvorlage',
-        'Teilbereich: Bilder mit Beleuchtung',
-        'Teilbereich: Springbrunnen gemeinsam mit der BKWI'
-      ]
+      icon: 'cube'
     },
     {
       id: 'sali',
-      name: 'Projekt Sali',
-      klartext: 'Projekt Sali begleiten und weiterentwickeln',
+      name: 'Wie hat die Erziehung unsere Persönlichkeit beeinflusst?',
       plaetze: 2,
       lehrkraft: 'thornton',
-      icon: 'heart',
-      details: [
-        'Projekt Sali kennenlernen',
-        'Eigenen Beitrag planen und umsetzen',
-        'Ergebnis dokumentieren'
-      ]
+      icon: 'heart'
     },
     {
       id: 'game-forge',
-      name: 'Game Forge',
-      klartext: 'Analoges Spiel entwickeln: Würfel, DnD oder Karten',
+      name: 'Analoges Spiel entwickeln',
       plaetze: 3,
       lehrkraft: 'thornton',
-      icon: 'dice',
-      details: [
-        'Spielidee, Regeln und Material entwickeln',
-        'Prototyp bauen und mit Testspielern erproben',
-        'Regelheft und Verpackung gestalten'
-      ]
+      icon: 'dice'
     },
     {
       id: 'escape',
-      name: 'Escape Protocol',
-      klartext: 'Einen digitalen Escape Room programmieren',
+      name: 'Escaperoom digital programmieren',
       plaetze: 2,
       lehrkraft: 'riegert',
-      icon: 'lock',
-      details: [
-        'Story und Rätselkette entwerfen',
-        'Escape Room digital programmieren',
-        'Mit einer Testgruppe durchspielen und nachschärfen'
-      ]
+      icon: 'lock'
     },
     {
       id: 'schule-2040',
-      name: 'Schule 2040',
-      klartext: '„Schule der Zukunft 2040“ – Vision und Konzept',
+      name: 'Schule der Zukunft 2040',
       plaetze: 3,
       lehrkraft: 'thornton',
-      icon: 'rocket',
-      details: [
-        'Wie sieht Schule im Jahr 2040 aus?',
-        'Konzept entwickeln und begründen',
-        'Ergebnis anschaulich präsentieren'
-      ]
+      icon: 'rocket'
     },
     {
       id: 'fake-news',
-      name: 'Fake News Lab',
-      klartext: 'Wahrheit oder Manipulation?',
+      name: 'Fake News Lab – Wahrheit oder Manipulation?',
       plaetze: 3,
       lehrkraft: 'thornton',
       icon: 'search',
-      badge: 'Ausweichprojekt',
-      details: [
-        'Falschmeldungen erkennen und überprüfen',
-        'Eigene Fälle sammeln und auswerten',
-        'Material für die Mitschülerinnen und Mitschüler erstellen'
-      ]
+      badge: 'Ausweichprojekt'
     }
   ]
 };

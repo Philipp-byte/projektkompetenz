@@ -155,9 +155,16 @@ window.PDF = (function () {
     return C.projekte.find(p => p.id === id) || null;
   }
 
-  function lehrkraftKurz(schluessel) {
+  function lehrkraftName(schluessel) {
     const l = C.lehrkraefte[schluessel];
     return l ? l.name : '–';
+  }
+
+  /* In der schmalen Spalte von Liste 1 ist nur der Nachname sinnvoll –
+     es gibt ohnehin nur zwei Lehrkräfte.                                */
+  function lehrkraftKurz(schluessel) {
+    const l = C.lehrkraefte[schluessel];
+    return l ? l.kurz : '–';
   }
 
   function stempel() {
@@ -213,11 +220,11 @@ window.PDF = (function () {
       alternateRowStyles: { fillColor: HELL },
       columnStyles: {
         0: { cellWidth:  9, halign: 'right', textColor: GRAU },
-        1: { cellWidth: 31, fontStyle: 'bold' },
-        2: { cellWidth: 26 },
-        3: { cellWidth: 21 },
-        4: { cellWidth: 46 },
-        5: { cellWidth: 32 },
+        1: { cellWidth: 29, fontStyle: 'bold' },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 61 },
+        5: { cellWidth: 21 },
         6: { cellWidth: 15, halign: 'center', textColor: GRAU }
       },
       didParseCell: d => {
@@ -267,9 +274,9 @@ window.PDF = (function () {
     const hoehe  = doc.internal.pageSize.getHeight();
     let y = OBEN;
 
-    const blockZeichnen = (titel, klartext, betreuung, belegung, mitglieder, farbe) => {
+    const blockZeichnen = (titel, zusatz, betreuung, belegung, mitglieder, farbe) => {
       const zeilenHoehe = 7.2;
-      const kopfHoehe = 16;
+      const kopfHoehe = zusatz ? 16 : 13;
       const noetig = kopfHoehe + (Math.max(mitglieder.length, 1) + 1) * zeilenHoehe + 10;
       if (y + noetig > hoehe - UNTEN) { doc.addPage(); y = OBEN; }
 
@@ -280,12 +287,14 @@ window.PDF = (function () {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12.5);
       doc.setTextColor.apply(doc, NAVY);
-      doc.text(titel, RAND + 6, y + 5.5);
+      doc.text(doc.splitTextToSize(titel, breite - 2 * RAND - 52)[0], RAND + 6, y + 5.5);
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.6);
-      doc.setTextColor.apply(doc, GRAU);
-      doc.text(doc.splitTextToSize(klartext, breite - 2 * RAND - 46)[0] || '', RAND + 6, y + 10.4);
+      if (zusatz) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.6);
+        doc.setTextColor.apply(doc, GRAU);
+        doc.text(doc.splitTextToSize(zusatz, breite - 2 * RAND - 46)[0] || '', RAND + 6, y + 10.4);
+      }
 
       /* Belegung rechts */
       doc.setFont('helvetica', 'bold');
@@ -295,7 +304,7 @@ window.PDF = (function () {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.6);
       doc.setTextColor.apply(doc, GRAU);
-      doc.text(betreuung, breite - RAND, y + 10.4, { align: 'right' });
+      doc.text(betreuung, breite - RAND, zusatz ? y + 10.4 : y + 10, { align: 'right' });
 
       y += kopfHoehe;
 
@@ -336,9 +345,9 @@ window.PDF = (function () {
       const b = Store.belegung(stand, p.id);
       const mitglieder = Store.teilnehmer(stand, p.id);
       blockZeichnen(
-        p.name + (p.klartext ? '' : ''),
-        p.klartext,
-        'Betreuung: ' + lehrkraftKurz(p.lehrkraft),
+        p.name,
+        p.nurKlassen && p.nurKlassen.length ? 'Anmeldung nur ' + p.nurKlassen.join(' und ') : '',
+        'Betreuung: ' + lehrkraftName(p.lehrkraft),
         {
           text: b.benutzt + ' von ' + b.max + ' Plätzen' + (b.aufgestockt ? '  (aufgestockt)' : ''),
           voll: b.frei <= 0

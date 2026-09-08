@@ -8,15 +8,35 @@ Bereich zum Umsortieren und zwei fertige PDF-Listen.
 
 ---
 
-## Die drei Seiten
+## Die Seiten
 
 | Seite | Wofür | Wer |
 |---|---|---|
 | `index.html` | Name und Klasse eintragen, Projekt wählen, jederzeit wechseln | Schülerinnen und Schüler |
 | `lehrkraft.html` | Umsortieren, Plätze aufstocken, PDF und CSV, Anmeldung schließen | Lehrkräfte (Passwort) |
 | `qr.html` | QR-Code zum Projizieren oder Ausdrucken | Lehrkräfte |
+| `einrichten.html` | Datenbank anbinden, mit echtem Verbindungstest | einmalig |
+| `passwort.html` | neues Lehrkraft-Passwort erzeugen | bei Bedarf |
 
-Dazu `passwort.html` — damit wird ein neues Lehrkraft-Passwort erzeugt.
+## Die Projekte
+
+| Projekt | Plätze | Betreuung |
+|---|---|---|
+| SDGs | 3 | Thornton |
+| Social-Media | 2 | beide · **Anmeldung nur BKW 16** |
+| Home-IT Kit + 3D-Projektor | 2 | Riegert |
+| Car-Kit + Roboterarm | 2 | Riegert |
+| Roboter | 2 | Riegert |
+| Schul-KI entwickeln | 3 | Riegert |
+| VR-Brille (Blender) + 360° Video | 2 | beide |
+| 3D-Druck | 4 | Riegert |
+| Wie hat die Erziehung unsere Persönlichkeit beeinflusst? | 2 | Thornton |
+| Analoges Spiel entwickeln | 3 | Thornton |
+| Escaperoom digital programmieren | 2 | Riegert |
+| Schule der Zukunft 2040 | 3 | Thornton |
+| Fake News Lab – Wahrheit oder Manipulation? (Ausweichprojekt) | 3 | Thornton |
+
+Auf den Karten steht bewusst nur der Projektname — keine Beschreibungstexte.
 
 ## Passwort
 
@@ -42,6 +62,14 @@ Erkannt wird eine Person über **Klasse + Nachname + Vorname**. Wer sich mit
 denselben Angaben erneut einträgt, ändert seine bestehende Anmeldung — es
 entsteht kein Doppeleintrag.
 
+### Projekte nur für bestimmte Klassen
+
+Steht bei einem Projekt `nurKlassen`, können sich nur diese Klassen selbst
+eintragen; für alle anderen ist die Karte gesperrt und mit „Nur BKW 16"
+beschriftet. Die Sperre greift auch in der Datenhaltung, nicht nur in der
+Anzeige. **Social-Media ist auf BKW 16 beschränkt.** Die Lehrkraft darf trotzdem
+jede Person überall zuordnen.
+
 ### Volle Projekte
 
 Die Plätze werden in einer Transaktion geprüft. Wenn zwei Personen im selben
@@ -66,7 +94,7 @@ Klasse, Projekt, Betreuung und der Anzahl ihrer Wechsel. Personen ohne Projekt
 sind rot hervorgehoben.
 
 **Liste 2 — Projekt → Schüler**
-Ein Block je Projekt mit Kurzbeschreibung, Betreuung, Belegung und allen
+Ein Block je Projekt mit Betreuung, Belegung und allen
 Teilnehmenden (Nachname, Vorname, Klasse, Datum). Am Ende ein Block mit allen,
 die noch kein Projekt haben.
 
@@ -80,13 +108,13 @@ beide PDF gleichzeitig.
 
 ```js
 {
-  id: 'makerspace',        // NIE nachträglich ändern - daran hängen die Anmeldungen
-  name: 'Makerspace',      // Überschrift auf der Karte
-  klartext: '3D-Druck: …', // erklärender Zusatz
-  plaetze: 4,              // Höchstzahl
-  lehrkraft: 'riegert',    // thornton | riegert | beide
+  id: 'makerspace',          // NIE nachträglich ändern - daran hängen die Anmeldungen
+  name: '3D-Druck',          // steht so auf der Karte und in beiden PDF
+  plaetze: 4,                // Höchstzahl
+  lehrkraft: 'riegert',      // thornton | riegert | beide
   icon: 'cube',
-  details: ['…', '…']      // Stichpunkte unter "Mehr dazu"
+  badge: 'Ausweichprojekt',  // optional, kleiner Hinweis auf der Karte
+  nurKlassen: ['BKW 16']     // optional, sonst dürfen alle Klassen
 }
 ```
 
@@ -94,9 +122,16 @@ Neuer Jahrgang: `datensatz:` in der `config.js` hochzählen — siehe `SETUP.md`
 
 ## Datenbank
 
-Ohne Einrichtung läuft alles im **Demo-Modus** (Daten nur auf dem eigenen Gerät,
-gut zum Ausprobieren). Für den echten Einsatz: **`SETUP.md`** — Firebase
-Firestore, kostenlos, etwa zehn Minuten.
+Damit **alle Geräte denselben Stand sehen**, braucht die Seite eine gemeinsame
+Datenbank. Ohne sie läuft alles im **Demo-Modus**: bedienbar zum Ausprobieren,
+aber jedes Gerät speichert nur für sich. Darauf weisen Schülerseite und
+Lehrkraft-Bereich dann mit einem roten Hinweis hin.
+
+Einrichtung: **`einrichten.html`** öffnen (oder **`SETUP.md`** lesen) — Firebase
+Firestore, kostenlos, Serverstandort Europa, etwa zehn Minuten. Die Seite testet
+die Verbindung anschließend wirklich: Sie schreibt in die Datenbank und liest
+vom Server zurück. Dieselbe Prüfung gibt es im Lehrkraft-Bereich jederzeit unter
+**PDF & Export → Verbindung prüfen**.
 
 Gespeichert werden ausschließlich Vorname, Nachname, Klasse, das gewählte Projekt
 und die Zeitpunkte der Änderungen. Keine E-Mail-Adressen, keine Konten, keine
@@ -108,7 +143,7 @@ Reine statische Seite ohne Bauschritt — HTML, CSS, JavaScript. Nachgeladen wer
 nur Firebase (Datenbank), jsPDF (PDF) und eine QR-Bibliothek.
 
 ```
-index.html · lehrkraft.html · qr.html · passwort.html
+index.html · lehrkraft.html · qr.html · einrichten.html · passwort.html
 css/style.css
 js/  config.js   ← hier wird eingestellt
      store.js    Datenhaltung und Transaktionen

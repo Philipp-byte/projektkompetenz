@@ -465,7 +465,9 @@ body::after {
 .projekt.meins { border-color: var(--gruen); background: rgba(140, 168, 138, .13); }
 .projekt.meins::before { background: linear-gradient(180deg, var(--gruen-hell), transparent); opacity: 1; }
 
-.projekt-kopf { display: flex; align-items: flex-start; gap: 12px; }
+/* Ohne Beschreibungstext steht nur noch der Name neben dem Symbol –
+   mittig ausgerichtet sieht das ruhiger aus.                            */
+.projekt-kopf { display: flex; align-items: center; gap: 12px; }
 
 .projekt-symbol {
   flex: 0 0 auto;
@@ -491,12 +493,6 @@ body::after {
   font-weight: 700;
   letter-spacing: -.2px;
   line-height: 1.2;
-}
-.projekt-klartext {
-  margin: 3px 0 0;
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: var(--schrift-weich);
 }
 
 .projekt-marken { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -550,39 +546,7 @@ body::after {
   white-space: nowrap;
 }
 
-.projekt-mehr {
-  margin-top: 11px;
-  padding-top: 11px;
-  border-top: 1px dashed var(--kante);
-  display: none;
-}
-.projekt.offen .projekt-mehr { display: block; animation: einblenden .25s ease; }
-.projekt-mehr ul { margin: 0; padding-left: 18px; }
-.projekt-mehr li {
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--schrift-weich);
-  margin-bottom: 4px;
-}
-.projekt-mehr li::marker { color: var(--orange); }
 
-.mehr-schalter {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 10px;
-  padding: 6px 10px;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--schrift-weich);
-  background: transparent;
-  border: 1px solid var(--kante);
-  border-radius: 9px;
-  cursor: pointer;
-}
-.mehr-schalter svg { width: 14px; height: 14px; transition: transform .22s; }
-.projekt.offen .mehr-schalter svg { transform: rotate(180deg); }
 
 @keyframes einblenden {
   from { opacity: 0; transform: translateY(-5px); }

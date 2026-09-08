@@ -1,36 +1,53 @@
-# Einrichtung der Datenbank (einmalig, ca. 10 Minuten)
+# Datenbank einrichten (einmalig, ca. 10 Minuten)
 
-Die Seite läuft sofort — aber zunächst im **Demo-Modus**: Jedes Handy sieht dann nur
-seine eigenen Eintragungen. Für den echten Einsatz braucht es eine gemeinsame
-Datenbank, damit alle Geräte dieselben Belegungszahlen sehen und ein voller Platz
-auch wirklich voll ist.
+**Ohne diesen Schritt speichert jedes Gerät nur für sich.** Was eine Klasse auf
+ihren Handys einträgt, kommt dann nicht bei der Lehrkraft an. Erst mit der
+gemeinsamen Datenbank sehen alle Geräte denselben Stand — sofort, ohne Neuladen.
 
-Dafür wird **Firebase Firestore** verwendet: kostenlos, von Google, für 30 Anmeldungen
-weit unter jeder Grenze des Gratis-Kontingents.
+> **Der bequeme Weg:** Die Seite **`einrichten.html`** führt durch alle Schritte,
+> nimmt die Zugangsdaten entgegen, **testet die Verbindung wirklich** (schreiben
+> und zurücklesen) und gibt den fertigen Block für die `config.js` aus.
+> Im Lehrkraft-Bereich steht der Link direkt im roten Hinweis.
+
+Verwendet wird **Firebase Firestore**: kostenlos, von Google, Serverstandort
+Europa. Für 30 Anmeldungen liegt das weit unter jeder Grenze des Gratis-Kontingents.
 
 ---
 
 ## Schritt 1 — Firebase-Projekt anlegen
 
-1. <https://console.firebase.google.com> öffnen und mit einem Google-Konto anmelden.
-2. **Projekt erstellen** anklicken.
-3. Name: `projektkompetenz` — weiter.
-4. Google Analytics: **ausschalten** (wird hier nicht gebraucht) — Projekt erstellen.
+1. <https://console.firebase.google.com> öffnen, mit einem Google-Konto anmelden.
+2. **Projekt erstellen** → Name `projektkompetenz` → weiter.
+3. Google Analytics **ausschalten** → **Projekt erstellen**.
 
 ## Schritt 2 — Datenbank anlegen
 
 1. Links im Menü: **Erstellen → Firestore Database**.
 2. **Datenbank erstellen** anklicken.
-3. Standort: **eur3 (europe-west)** oder **europe-west3 (Frankfurt)** wählen —
+3. Standort **eur3 (europe-west)** oder **europe-west3 (Frankfurt)** wählen —
    die Daten bleiben damit in Europa.
-4. Startmodus: **Im Produktionsmodus starten**. Die Regeln kommen in Schritt 4.
+4. Startmodus: **Im Produktionsmodus starten**.
 
-## Schritt 3 — Zugangsdaten in die Seite eintragen
+> Dieser Schritt wird gern übersehen. Ein Firebase-Projekt ohne angelegte
+> Firestore-Datenbank antwortet gar nicht — der Verbindungstest läuft dann in
+> sein Zeitlimit und meldet genau das.
 
-1. Oben links auf das **Zahnrad → Projekteinstellungen**.
-2. Nach unten scrollen zu **Meine Apps** → auf das Symbol **`</>`** (Web) klicken.
-3. App-Name: `Projektkompetenz` — **App registrieren** (Hosting NICHT ankreuzen).
-4. Es erscheint ein Block, der so aussieht:
+## Schritt 3 — Sicherheitsregeln veröffentlichen
+
+1. In Firestore oben auf den Reiter **Regeln**.
+2. Den gesamten Inhalt durch die Datei **`firestore.rules`** ersetzen
+   (auf `einrichten.html` steht der Text zum Kopieren bereit).
+3. **Veröffentlichen** anklicken.
+
+Die Regeln erlauben Schreibzugriff **nur** auf den einen Datensatz der Anmeldung
+und begrenzen dessen Größe. Alles andere in der Datenbank bleibt gesperrt.
+
+## Schritt 4 — Zugangsdaten in die Seite eintragen
+
+1. Oben links **Zahnrad → Projekteinstellungen**.
+2. Nach unten zu **Meine Apps** → auf **`</>`** (Web) klicken.
+3. App-Name `Projektkompetenz` → **App registrieren** (Hosting nicht ankreuzen).
+4. Der angezeigte Block sieht so aus:
 
    ```js
    const firebaseConfig = {
@@ -43,30 +60,24 @@ weit unter jeder Grenze des Gratis-Kontingents.
    };
    ```
 
-5. Diese sechs Werte in die Datei **`js/config.js`** übertragen, in den Abschnitt
-   `firebase: { … }`. Anführungszeichen und Kommas beibehalten.
+5. Block auf `einrichten.html` einfügen → **Verbindung testen** → den
+   ausgegebenen Abschnitt in **`js/config.js`** bei `firebase: { … }` einsetzen.
 6. Datei speichern und hochladen (bei GitHub: Datei bearbeiten → *Commit changes*).
 
 > Diese Schlüssel dürfen öffentlich stehen — genau dafür sind sie gemacht.
-> Was erlaubt ist, regeln allein die Regeln aus Schritt 4.
+> Was erlaubt ist, regeln allein die Regeln aus Schritt 3.
 
-## Schritt 4 — Sicherheitsregeln setzen
+## Schritt 5 — Nachweis, dass es wirklich funktioniert
 
-1. In Firestore oben auf den Reiter **Regeln**.
-2. Den kompletten Inhalt durch die Datei **`firestore.rules`** aus diesem Projekt
-   ersetzen (Inhalt kopieren und einfügen).
-3. **Veröffentlichen** anklicken.
+1. Lehrkraft-Bereich öffnen → Reiter **PDF & Export** → **Verbindung prüfen**.
+   Der Test schreibt in die Datenbank und liest vom Server zurück. Grün heißt:
+   alle Geräte arbeiten auf denselben Daten.
+2. Gegenprobe: auf dem Handy eintragen, am Rechner die Seite offen lassen —
+   der Eintrag muss dort **ohne Neuladen** erscheinen.
+3. Unten auf jeder Seite steht dann **„live verbunden"** statt „Demo-Modus".
 
-Diese Regeln erlauben Schreibzugriff **nur** auf den einen Datensatz der Anmeldung
-und begrenzen dessen Größe. Alles andere in der Datenbank ist gesperrt.
-
-## Schritt 5 — Probe aufs Exempel
-
-1. Die Seite auf dem Handy öffnen, eintragen.
-2. Die Seite am Rechner öffnen — die Anmeldung muss dort sofort erscheinen.
-3. Unten steht dann **„live verbunden"** statt „Demo-Modus".
-
-Fertig.
+Der rote Hinweis auf der Schülerseite und im Lehrkraft-Bereich verschwindet
+erst, wenn die Verbindung wirklich steht.
 
 ---
 
@@ -86,7 +97,8 @@ jederzeit wieder anzeigen.
 
 | Anzeige | Ursache | Lösung |
 |---|---|---|
-| „Demo-Modus" trotz Eintragung | `apiKey` oder `projectId` fehlt | Schritt 3 prüfen, Seite neu laden (Strg + F5) |
-| „keine Verbindung" | Regeln zu streng oder Datenbank fehlt | Schritt 2 und 4 wiederholen |
-| Anmeldung wird nicht gespeichert | Regeln nicht veröffentlicht | Schritt 4, **Veröffentlichen** |
-| PDF-Knopf tut nichts | keine Internetverbindung | PDF-Bibliothek wird online geladen |
+| „Demo-Modus" trotz Eintragung | `apiKey` oder `projectId` fehlt in der `config.js` | Schritt 4, danach Strg + F5 |
+| Test meldet „hat nicht geantwortet" | keine Firestore-Datenbank angelegt | Schritt 2 |
+| Test meldet „verweigert das Schreiben" | Regeln nicht veröffentlicht | Schritt 3 |
+| Test meldet „Zugangsdaten stimmen nicht" | Block unvollständig kopiert | Schritt 4 |
+| PDF-Knopf tut nichts | keine Internetverbindung | die PDF-Bibliothek wird online geladen |
