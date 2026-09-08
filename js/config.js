@@ -33,16 +33,18 @@ window.CONFIG = {
   adminHash: '140f5106bf1ecef2784832e1f59796214edfdb54c7c279a411dfd76eda34852b',
 
   /* --- Datenbank (Firebase / Firestore) -----------------------------------
-     Solange projectId leer ist, läuft die Seite im DEMO-MODUS:
-     alles funktioniert, die Daten bleiben aber nur auf dem eigenen Gerät.
-     Einrichtung Schritt für Schritt: siehe SETUP.md                         */
+     Eingerichtet am 08.09.2026. Projekt projektkompetenz-f1124,
+     Firestore-Standort europe-west10 (Berlin) - die Daten liegen in
+     Deutschland. Diese Werte sind keine Geheimnisse, sie gehören in die
+     Seite; den Zugriff regeln allein die Regeln in firestore.rules.
+     Wechsel auf eine andere Datenbank: einrichten.html                      */
   firebase: {
-    apiKey: '',
-    authDomain: '',
-    projectId: '',
-    storageBucket: '',
-    messagingSenderId: '',
-    appId: ''
+    apiKey: 'AIzaSyBYp8FIyJo5CKARPAbWznTcx_ZSPiVmEiE',
+    authDomain: 'projektkompetenz-f1124.firebaseapp.com',
+    projectId: 'projektkompetenz-f1124',
+    storageBucket: 'projektkompetenz-f1124.firebasestorage.app',
+    messagingSenderId: '476873815151',
+    appId: '1:476873815151:web:b54aca7f1d83d3b2a1899a'
   },
 
   /* Name des Datensatzes in der Datenbank. Für einen neuen Jahrgang einfach
