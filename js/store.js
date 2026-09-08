@@ -211,14 +211,25 @@ window.Store = (function () {
   async function schreiben(aendern) {
     if (modus === 'online') {
       try {
+        let letzteFassung = null;
         const wert = await db.runTransaction(async tx => {
           const snap = await tx.get(ref);
           const stand = snap.exists ? Object.assign(leererStand(), snap.data()) : leererStand();
           const r = aendern(stand);
           stand.stand = new Date().toISOString();
           tx.set(ref, saeubern(stand));
+          letzteFassung = stand;   // bei einem Neuversuch gilt der letzte Durchlauf
           return r;
         });
+
+        /* Die Transaktion ist durch, der Schnappschuss vom Server kommt aber
+           erst kurz danach. Ohne diese Zeile würde die Oberfläche einen
+           Augenblick lang so tun, als hätte es die Änderung nie gegeben –
+           genau daran ist die Bestätigungsseite vorher gescheitert.        */
+        if (letzteFassung) {
+          letzterStand = letzteFassung;
+          listener(letzterStand, modus);
+        }
         return { ok: true, wert };
       } catch (e) {
         return { ok: false, fehler: e && e.message ? e.message : String(e) };

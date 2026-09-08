@@ -124,7 +124,7 @@ Neuer Jahrgang: `datensatz:` in der `config.js` hochzählen — siehe `SETUP.md`
 
 Browser halten die Dateien bis zu zehn Minuten fest. Damit eine Korrektur
 sofort bei allen ankommt, steht hinter jeder eigenen Datei eine
-Versionskennung, z. B. `js/app.js?v=2026-09-08-3`. Diese Kennung in allen
+Versionskennung, z. B. `js/app.js?v=2026-09-08-4`. Diese Kennung in allen
 HTML-Dateien auf denselben neuen Wert setzen (Datum plus laufende Nummer),
 dann laden alle Geräte die neue Fassung beim nächsten Aufruf.
 
