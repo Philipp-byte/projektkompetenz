@@ -15,6 +15,7 @@
     gewaehlt: null,
     key: null,
     filter: 'alle',
+    letzteAnmeldung: null,
     bereit: false,
     sendet: false
   };
@@ -207,14 +208,30 @@
   /* ---------------------------------------------------------- Bestätigung */
 
   function fertigZeichnen() {
-    const a = Store.stand.anmeldungen[zustand.key];
-    if (!a) { ansichtZeigen('name'); return; }
+    let a = Store.stand.anmeldungen[zustand.key];
+    let fehltInListe = false;
+
+    if (a) {
+      zustand.letzteAnmeldung = a;          // für den Fall einer Lücke merken
+    } else if (zustand.letzteAnmeldung) {
+      /* Die Anmeldung steht gerade nicht im Datenbestand. Statt den Schüler
+         wortlos auf Schritt 1 zurückzuwerfen, zeigen wir weiter das zuletzt
+         Bekannte und sagen offen, dass etwas nicht stimmt.                  */
+      a = zustand.letzteAnmeldung;
+      fehltInListe = true;
+    } else {
+      ansichtZeigen('name');
+      return;
+    }
+
     const p = Store.projektById(a.projektId);
 
     $('fertig-name').textContent = a.vorname;
-    $('fertig-text').textContent = a.wechsel > 0
-      ? 'Deine Änderung ist gespeichert. Das gilt jetzt.'
-      : 'Du bist eingetragen. Deine Wahl ist gespeichert.';
+    $('fertig-text').textContent = fehltInListe
+      ? 'Achtung: Deine Anmeldung steht gerade nicht in der Liste. Vielleicht hat die Lehrkraft sie entfernt – trage dich unten sicherheitshalber neu ein.'
+      : (a.wechsel > 0
+        ? 'Deine Änderung ist gespeichert. Das gilt jetzt.'
+        : 'Du bist eingetragen. Deine Wahl ist gespeichert.');
 
     $('fertig-daten').innerHTML =
       zeile('Name', a.vorname + ' ' + a.nachname) +

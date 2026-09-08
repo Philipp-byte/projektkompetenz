@@ -150,8 +150,18 @@ window.Store = (function () {
         db = firebase.firestore();
         ref = db.collection('projektkompetenz').doc(C.datensatz);
         modus = 'online';
+        let hatteDaten = false;
         ref.onSnapshot(
           snap => {
+            /* Firestore meldet beim Start zuerst einen Schnappschuss aus dem
+               eigenen Zwischenspeicher. Der kann leer sein, obwohl auf dem
+               Server längst Anmeldungen stehen. Solchen Schnappschuss
+               verwerfen wir – sonst sieht die Seite kurz aus, als wären alle
+               Anmeldungen verschwunden.                                     */
+            const ausZwischenspeicher = snap.metadata && snap.metadata.fromCache;
+            if (!snap.exists && ausZwischenspeicher && hatteDaten) return;
+            if (snap.exists) hatteDaten = true;
+
             letzterStand = snap.exists ? Object.assign(leererStand(), snap.data()) : leererStand();
             listener(letzterStand, modus);
           },
