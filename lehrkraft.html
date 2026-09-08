@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071A25">
+<meta name="robots" content="noindex">
+<title>Lehrkräfte · Projektkompetenz</title>
+<link rel="icon" href="assets/kolping-bildung-logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="kopf">
+  <a class="kopf-zurueck" href="index.html" aria-label="Zur Schülerseite" id="zur-startseite"></a>
+  <div class="kopf-titel">
+    <b>Lehrkräfte</b>
+    <span id="kopf-unter">Projektkompetenz</span>
+  </div>
+  <div class="logo-feld">
+    <img src="assets/kolping-bildung-logo.png" alt="Kolping Bildung">
+  </div>
+</header>
+
+<!-- ============================== Anmeldung ============================== -->
+<main class="huelle" id="tor">
+  <div class="hero">
+    <span class="marke">Geschützter Bereich</span>
+    <h1>Bereich für <em>Lehrkräfte</em></h1>
+    <p>Gruppen umsortieren, Plätze aufstocken, Listen als PDF ausgeben.
+       Für Frau Thornton und Herrn Riegert.</p>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel">Anmeldung</h2>
+    <div class="feld">
+      <label for="passwort">Passwort</label>
+      <input type="password" id="passwort" autocomplete="current-password"
+             enterkeyhint="go" placeholder="••••••••">
+      <div class="feld-fehler" id="fehler-passwort">Das Passwort stimmt nicht.</div>
+    </div>
+    <button class="knopf" id="anmelden" style="margin-top:6px">Anmelden</button>
+  </div>
+
+  <div class="karte">
+    <div class="hinweis">
+      <span></span>
+      <div><b>Hinweis zur Sicherheit.</b> Das Passwort schützt vor neugierigen
+      Blicken, ist aber kein Tresor: Die Seite läuft vollständig im Browser.
+      Gib das Passwort nicht an die Klassen weiter.</div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================== Arbeitsbereich ========================= -->
+<main class="huelle huelle--weit" id="pult" hidden>
+
+  <div class="hero" style="padding:20px 0 14px">
+    <h1 style="font-size:clamp(24px,6.4vw,34px)">Projekt<em>verteilung</em></h1>
+    <p id="pult-unter">Stand wird geladen …</p>
+  </div>
+
+  <div class="kacheln">
+    <div class="kachel"><b id="z-angemeldet">0</b><span>Angemeldet</span></div>
+    <div class="kachel blau"><b id="z-plaetze">0</b><span>Plätze gesamt</span></div>
+    <div class="kachel gruen"><b id="z-frei">0</b><span>Noch frei</span></div>
+    <div class="kachel"><b id="z-ohne">0</b><span>Ohne Projekt</span></div>
+  </div>
+
+  <div class="reiter" role="tablist">
+    <button role="tab" data-blatt="projekte" aria-selected="true">Projekte</button>
+    <button role="tab" data-blatt="schueler" aria-selected="false">Schüler</button>
+    <button role="tab" data-blatt="verlauf" aria-selected="false">Verlauf</button>
+    <button role="tab" data-blatt="export" aria-selected="false">PDF &amp; Export</button>
+  </div>
+
+  <!-- --------------------------------------------------------- Projekte -->
+  <section class="blatt aktiv" id="blatt-projekte" role="tabpanel">
+    <div class="karte" style="margin-bottom:14px">
+      <div class="hinweis">
+        <span></span>
+        <div>Über das Auswahlfeld hinter einem Namen verschiebst du eine Person in
+        ein anderes Projekt. Das Platzlimit darfst du dabei überschreiten – die
+        Seite fragt vorher nach. Mit <b>+</b> und <b>−</b> änderst du die Anzahl
+        der Plätze eines Projekts.</div>
+      </div>
+    </div>
+    <div id="gruppen"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- Schüler --->
+  <section class="blatt" id="blatt-schueler" role="tabpanel">
+    <div class="karte" style="margin-bottom:14px">
+      <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+        <button class="knopf knopf--klein" id="person-neu">Person eintragen</button>
+        <select id="klassen-filter" style="padding:9px 12px;border-radius:11px;background:rgba(255,255,255,.08);color:#F2F7FA;border:1px solid rgba(255,255,255,.12);font:inherit;font-size:14px">
+          <option value="">Alle Klassen</option>
+        </select>
+        <span class="mini" id="schueler-anzahl"></span>
+      </div>
+    </div>
+    <div class="karte">
+      <div class="tabelle-huelle" id="schueler-tabelle"></div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- Verlauf --->
+  <section class="blatt" id="blatt-verlauf" role="tabpanel">
+    <div class="karte">
+      <h2 class="karte-titel">Alle Änderungen · neueste zuerst</h2>
+      <div class="protokoll" id="protokoll"></div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- Export --->
+  <section class="blatt" id="blatt-export" role="tabpanel">
+    <div class="karte">
+      <h2 class="karte-titel">Zwei PDF-Listen</h2>
+      <p style="margin:0 0 14px;color:rgba(242,247,250,.68);font-size:14px">
+        Beide Listen im Kolping-Design mit Logo, Datum und Unterschriftsfeld.
+      </p>
+      <div style="display:grid;gap:10px">
+        <button class="knopf" id="pdf-schueler">Liste 1 · Schüler → Projekt</button>
+        <button class="knopf" id="pdf-projekte">Liste 2 · Projekt → Schüler</button>
+        <button class="knopf knopf--leise" id="pdf-beide">Beide PDF auf einmal</button>
+        <button class="knopf knopf--leise" id="csv">Als CSV für Excel</button>
+      </div>
+    </div>
+
+    <div class="karte">
+      <h2 class="karte-titel">Anmeldung steuern</h2>
+      <div id="sperr-anzeige" style="margin-bottom:12px"></div>
+      <button class="knopf knopf--leise" id="sperren">Anmeldung schließen</button>
+    </div>
+
+    <div class="karte">
+      <h2 class="karte-titel">Gefahrenzone</h2>
+      <p style="margin:0 0 12px;color:rgba(242,247,250,.68);font-size:14px">
+        Löscht alle Anmeldungen dieses Jahrgangs. Vorher unbedingt die PDF sichern.
+      </p>
+      <button class="knopf knopf--gefahr" id="zuruecksetzen">Alle Anmeldungen löschen</button>
+    </div>
+
+    <div class="karte">
+      <h2 class="karte-titel">QR-Code</h2>
+      <p style="margin:0 0 12px;color:rgba(242,247,250,.68);font-size:14px">
+        Zum Projizieren oder Ausdrucken – die Klassen scannen ihn und landen
+        direkt auf der Anmeldeseite.
+      </p>
+      <a class="knopf knopf--leise" href="qr.html" style="text-decoration:none">QR-Code öffnen</a>
+    </div>
+  </section>
+
+  <footer class="fuss">
+    <span>Kolping Bildung · Thornton &amp; Riegert</span>
+    <span><a href="index.html">Zur Schülerseite</a> · <a href="#" id="abmelden">Abmelden</a></span>
+  </footer>
+</main>
+
+<div class="leiste" id="leiste" hidden>
+  <div class="leiste-innen" style="display:flex;justify-content:center">
+    <span class="status" id="status"><i></i><span id="status-text">verbinde …</span></span>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/store.js"></script>
+<script src="assets/logo-data.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

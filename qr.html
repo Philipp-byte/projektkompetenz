@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071A25">
+<meta name="robots" content="noindex">
+<title>QR-Code · Projektkompetenz</title>
+<link rel="icon" href="assets/kolping-bildung-logo.png">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* Der QR-Code braucht hellen Grund – deshalb bekommt er eine weiße Karte. */
+  .qr-blatt {
+    background: #fff;
+    color: #12415B;
+    border-radius: 22px;
+    padding: 26px 22px 30px;
+    text-align: center;
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,.85);
+  }
+  .qr-blatt-kopf {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; margin-bottom: 20px;
+  }
+  .qr-blatt-kopf img { height: 30px; width: auto; }
+  .qr-blatt-kopf .zeile { text-align: left; }
+  .qr-blatt-kopf b { display: block; font-size: 17px; color: #12415B; }
+  .qr-blatt-kopf span { font-size: 12px; color: #6E808A; letter-spacing: .6px; text-transform: uppercase; }
+  .qr-strich { height: 3px; background: #EE7203; border-radius: 3px; margin-bottom: 22px; }
+  #qr-bild { display: inline-block; line-height: 0; padding: 10px; border: 2px solid #E7EDF0; border-radius: 16px; }
+  #qr-bild img, #qr-bild canvas { display: block; width: 100%; height: auto; max-width: 320px; }
+  .qr-frage { margin: 20px 0 6px; font-size: 21px; font-weight: 700; color: #12415B; }
+  .qr-schritte { margin: 0 auto; max-width: 380px; font-size: 14px; color: #40606F; line-height: 1.55; }
+  .qr-adresse {
+    margin-top: 18px; padding: 11px 14px; border-radius: 11px;
+    background: #E7EDF0; color: #12415B; font-size: 13px; word-break: break-all;
+    font-weight: 600;
+  }
+  @media print {
+    body { background: #fff !important; }
+    .kopf, .leiste, .fuss, .nicht-drucken { display: none !important; }
+    .huelle { padding: 0; width: 100%; }
+    .qr-blatt { box-shadow: none; border: 1px solid #D6DEE3; padding: 12mm; }
+    #qr-bild img, #qr-bild canvas { max-width: 110mm; }
+  }
+</style>
+</head>
+<body>
+
+<header class="kopf nicht-drucken">
+  <a class="kopf-zurueck" href="lehrkraft.html" aria-label="Zurück" id="zurueck"></a>
+  <div class="kopf-titel">
+    <b>QR-Code</b>
+    <span>zum Aushängen und Projizieren</span>
+  </div>
+  <div class="logo-feld"><img src="assets/kolping-bildung-logo.png" alt="Kolping Bildung"></div>
+</header>
+
+<main class="huelle">
+  <div class="hero nicht-drucken" style="padding-bottom:14px">
+    <h1 style="font-size:clamp(24px,6.4vw,32px)">Scannen und <em>loslegen</em></h1>
+    <p>Diese Seite an die Wand werfen oder ausdrucken. Die Klassen scannen den
+       Code mit der Handykamera und landen direkt auf der Anmeldeseite.</p>
+  </div>
+
+  <div class="qr-blatt">
+    <div class="qr-blatt-kopf">
+      <div class="zeile">
+        <b>Projektkompetenz</b>
+        <span id="jahr">Schuljahr</span>
+      </div>
+      <img src="assets/kolping-bildung-logo.png" alt="Kolping Bildung">
+    </div>
+    <div class="qr-strich"></div>
+
+    <div id="qr-bild" aria-label="QR-Code zur Anmeldeseite"></div>
+
+    <p class="qr-frage">Welches Projekt wird deins?</p>
+    <p class="qr-schritte">
+      Kamera öffnen · Code scannen · Name und Klasse eintragen · Projekt wählen.<br>
+      Ändern geht später jederzeit.
+    </p>
+
+    <div class="qr-adresse" id="adresse">…</div>
+  </div>
+
+  <div class="karte nicht-drucken" style="margin-top:16px">
+    <div style="display:grid;gap:9px">
+      <button class="knopf" id="drucken">Drucken oder als PDF sichern</button>
+      <button class="knopf knopf--leise" id="kopieren">Link kopieren</button>
+      <a class="knopf knopf--leise" href="index.html" style="text-decoration:none">Anmeldeseite öffnen</a>
+    </div>
+  </div>
+
+  <footer class="fuss nicht-drucken">
+    <span>Kolping Bildung · Projektkompetenz</span>
+    <span><a href="lehrkraft.html">Bereich für Lehrkräfte</a></span>
+  </footer>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script>
+(function () {
+  'use strict';
+  const ziel = new URL('index.html', location.href).href;
+  document.getElementById('adresse').textContent = ziel;
+  document.getElementById('jahr').textContent = 'Schuljahr ' + window.CONFIG.schuljahr;
+  document.getElementById('zurueck').innerHTML = UI.symbol('zurueck', 18);
+
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  s.onload = () => {
+    new QRCode(document.getElementById('qr-bild'), {
+      text: ziel,
+      width: 640, height: 640,
+      colorDark: '#12415B',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  };
+  s.onerror = () => {
+    document.getElementById('qr-bild').innerHTML =
+      '<p style="color:#C23A1E;font-size:14px;padding:20px">Der QR-Code braucht kurz Internet. ' +
+      'Bitte Seite mit Verbindung neu laden.</p>';
+  };
+  document.head.appendChild(s);
+
+  document.getElementById('drucken').addEventListener('click', () => window.print());
+  document.getElementById('kopieren').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(ziel);
+      UI.meldung('Link kopiert.', 'gut');
+    } catch (e) {
+      UI.meldung('Kopieren ging nicht – Adresse bitte von Hand übernehmen.', 'warn');
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071A25">
+<meta name="description" content="Projektkompetenz an der Kolping Bildung – hier wählst du dein Projekt.">
+<meta name="robots" content="noindex">
+<title>Projektkompetenz · Kolping Bildung</title>
+<link rel="icon" href="assets/kolping-bildung-logo.png">
+<link rel="apple-touch-icon" href="assets/kolping-bildung-logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="kopf">
+  <button class="kopf-zurueck" id="zurueck" hidden aria-label="Einen Schritt zurück"></button>
+  <div class="kopf-titel">
+    <b id="kopf-titel">Projektkompetenz</b>
+    <span id="kopf-unter">Kolping Bildung</span>
+  </div>
+  <div class="logo-feld">
+    <img src="assets/kolping-bildung-logo.png" alt="Kolping Bildung">
+  </div>
+</header>
+
+<main class="huelle" id="haupt">
+
+  <!-- ============================ Schritt 1: Name ======================== -->
+  <section id="ansicht-name" class="ansicht">
+    <div class="hero">
+      <span class="marke" id="marke">Schuljahr 2026 / 27</span>
+      <h1>Deine <em>Projektkompetenz</em> beginnt hier.</h1>
+      <p>Trage deinen Namen und deine Klasse ein. Danach suchst du dir dein
+         Projekt aus. Du kannst deine Wahl später jederzeit ändern.</p>
+    </div>
+
+    <div class="schritte" aria-hidden="true">
+      <span class="schritt aktiv" id="s1"><i></i></span>
+      <span class="schritt" id="s2"><i></i></span>
+      <span class="schritt" id="s3"><i></i></span>
+    </div>
+
+    <div class="karte">
+      <h2 class="karte-titel">Schritt 1 · Wer bist du?</h2>
+
+      <div class="feld">
+        <label for="vorname">Vorname</label>
+        <input type="text" id="vorname" name="vorname" autocomplete="given-name"
+               enterkeyhint="next" placeholder="z. B. Alex" maxlength="40" spellcheck="false">
+        <div class="feld-fehler" id="fehler-vorname">Bitte trage deinen Vornamen ein.</div>
+      </div>
+
+      <div class="feld">
+        <label for="nachname">Nachname</label>
+        <input type="text" id="nachname" name="nachname" autocomplete="family-name"
+               enterkeyhint="next" placeholder="z. B. Sommer" maxlength="40" spellcheck="false">
+        <div class="feld-fehler" id="fehler-nachname">Bitte trage deinen Nachnamen ein.</div>
+      </div>
+
+      <div class="feld">
+        <label id="klasse-label">Klasse</label>
+        <div class="chips" id="klassen" role="group" aria-labelledby="klasse-label"></div>
+        <div class="feld-fehler" id="fehler-klasse">Bitte tippe deine Klasse an.</div>
+      </div>
+    </div>
+
+    <div class="karte" style="margin-top:14px">
+      <div class="hinweis">
+        <span id="hinweis-symbol"></span>
+        <div><b>Warum brauchen wir das?</b> Frau Thornton und Herr Riegert stellen
+        daraus die Projektgruppen zusammen. Es werden nur Vorname, Nachname,
+        Klasse und dein Projekt gespeichert.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= Schritt 2: Projekte ======================= -->
+  <section id="ansicht-projekte" class="ansicht" hidden>
+    <div class="hero" style="padding-bottom:12px">
+      <h1 style="font-size:clamp(24px,6.6vw,34px)">Wähle dein <em>Projekt</em></h1>
+      <p id="projekte-unter">Tippe ein Projekt an. Mit „Mehr“ siehst du, was dich erwartet.</p>
+    </div>
+
+    <div class="schritte" aria-hidden="true">
+      <span class="schritt fertig"><i></i></span>
+      <span class="schritt aktiv"><i></i></span>
+      <span class="schritt"><i></i></span>
+    </div>
+
+    <div class="filter" id="filter" role="group" aria-label="Nach Lehrkraft filtern"></div>
+
+    <div id="gesperrt-hinweis" hidden style="margin-bottom:14px">
+      <div class="hinweis hinweis--rot">
+        <span></span>
+        <div><b>Die Anmeldung ist geschlossen.</b> Wende dich an Frau Thornton
+        oder Herrn Riegert, wenn du noch etwas ändern musst.</div>
+      </div>
+    </div>
+
+    <div class="projekte" id="projekte"></div>
+  </section>
+
+  <!-- ========================= Schritt 3: Fertig ========================= -->
+  <section id="ansicht-fertig" class="ansicht" hidden>
+    <div class="schritte" style="margin-top:22px" aria-hidden="true">
+      <span class="schritt fertig"><i></i></span>
+      <span class="schritt fertig"><i></i></span>
+      <span class="schritt fertig"><i></i></span>
+    </div>
+
+    <div class="karte">
+      <div class="erfolg">
+        <div class="erfolg-ring" id="erfolg-ring"></div>
+        <h2>Passt, <span class="name" id="fertig-name">…</span>!</h2>
+        <p id="fertig-text">Du bist eingetragen. Deine Wahl ist gespeichert.</p>
+
+        <dl class="zusammenfassung" id="fertig-daten"></dl>
+      </div>
+    </div>
+
+    <div class="karte">
+      <h2 class="karte-titel">Deine Änderungen</h2>
+      <div id="fertig-verlauf"></div>
+    </div>
+
+    <div class="karte">
+      <div class="hinweis hinweis--gruen">
+        <span></span>
+        <div><b>Du darfst wechseln.</b> Solange die Anmeldung offen ist und im
+        neuen Projekt ein Platz frei ist, kannst du dein Projekt tauschen.
+        Jeder Wechsel wird protokolliert.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="fuss">
+    <span>Kolping Bildung · Projektkompetenz</span>
+    <span><a href="lehrkraft.html">Bereich für Lehrkräfte</a></span>
+  </footer>
+</main>
+
+<div class="leiste" id="leiste">
+  <div class="leiste-innen">
+    <button class="knopf" id="haupt-knopf">Weiter</button>
+    <button class="knopf knopf--leise" id="neben-knopf" hidden style="margin-top:9px">Abbrechen</button>
+    <div style="display:flex;justify-content:center;margin-top:10px">
+      <span class="status" id="status"><i></i><span id="status-text">verbinde …</span></span>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

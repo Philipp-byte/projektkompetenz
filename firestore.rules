@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Sicherheitsregeln fuer die Projektkompetenz-Anmeldung.
+// Es gibt genau EINEN Datensatz, der beschrieben werden darf. Alles andere
+// in dieser Datenbank ist gesperrt.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /projektkompetenz/{datensatz} {
+
+      // Jeder darf den Stand lesen - die Belegungszahlen muessen fuer alle
+      // Geraete sichtbar sein.
+      allow read: if true;
+
+      // Geschrieben werden darf nur ein Datensatz mit genau diesen Feldern,
+      // in vernuenftiger Groesse. Das verhindert, dass jemand die Datenbank
+      // als Ablage missbraucht.
+      allow write: if request.resource.data.keys().hasOnly(
+                        ['anmeldungen', 'log', 'extraPlaetze', 'gesperrt', 'stand'])
+                   && request.resource.data.anmeldungen is map
+                   && request.resource.data.anmeldungen.size() <= 300
+                   && request.resource.data.log.size() <= 150;
+    }
+
+    // Alles Uebrige: kein Zugriff.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071A25">
+<meta name="robots" content="noindex">
+<title>Passwort ändern · Projektkompetenz</title>
+<link rel="icon" href="assets/kolping-bildung-logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="kopf">
+  <a class="kopf-zurueck" href="lehrkraft.html" aria-label="Zurück" id="zurueck"></a>
+  <div class="kopf-titel">
+    <b>Passwort ändern</b>
+    <span>Werkzeug für Lehrkräfte</span>
+  </div>
+  <div class="logo-feld"><img src="assets/kolping-bildung-logo.png" alt="Kolping Bildung"></div>
+</header>
+
+<main class="huelle">
+  <div class="hero">
+    <span class="marke">Werkzeug</span>
+    <h1>Neues <em>Passwort</em> festlegen</h1>
+    <p>Das Passwort selbst wird nirgends gespeichert – nur sein Fingerabdruck.
+       Hier wird dieser Fingerabdruck berechnet.</p>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel">Schritt 1 · Passwort eintippen</h2>
+    <div class="feld">
+      <label for="pw">Wunschpasswort</label>
+      <input type="text" id="pw" placeholder="z. B. Projektkompetenz-2027" spellcheck="false" autocomplete="off">
+    </div>
+    <div class="feld">
+      <label for="hash">Schritt 2 · Dieser Fingerabdruck kommt in die config.js</label>
+      <input type="text" id="hash" readonly value="—" style="font-size:13px">
+    </div>
+    <button class="knopf" id="kopieren">Fingerabdruck kopieren</button>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel">Schritt 3 · Eintragen</h2>
+    <div class="hinweis">
+      <span id="i1"></span>
+      <div>Datei <b>js/config.js</b> öffnen, die Zeile <b>adminHash:</b> suchen und
+      den Wert zwischen den Anführungszeichen durch den kopierten Fingerabdruck
+      ersetzen. Datei speichern und hochladen – fertig. Notiere dir das neue
+      Passwort, es lässt sich aus dem Fingerabdruck nicht zurückrechnen.</div>
+    </div>
+  </div>
+
+  <div class="karte">
+    <h2 class="karte-titel">Prüfung</h2>
+    <p style="margin:0 0 12px;color:rgba(242,247,250,.68);font-size:14px">
+      Stimmt das oben eingetippte Passwort mit dem überein, das gerade in der
+      config.js hinterlegt ist?</p>
+    <div id="probe" class="leer">noch nichts eingetippt</div>
+  </div>
+
+  <footer class="fuss">
+    <span>Kolping Bildung · Projektkompetenz</span>
+    <span><a href="lehrkraft.html">Bereich für Lehrkräfte</a></span>
+  </footer>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  $('zurueck').innerHTML = UI.symbol('zurueck', 18);
+  $('i1').innerHTML = UI.symbol('info', 18);
+
+  function rechnen() {
+    const wert = $('pw').value;
+    if (!wert) {
+      $('hash').value = '—';
+      $('probe').className = 'leer';
+      $('probe').textContent = 'noch nichts eingetippt';
+      return;
+    }
+    const h = UI.sha256(wert);
+    $('hash').value = h;
+    const passt = h === String(window.CONFIG.adminHash).toLowerCase();
+    $('probe').className = passt ? 'hinweis hinweis--gruen' : 'hinweis';
+    $('probe').innerHTML = (passt ? UI.symbol('check', 18) : UI.symbol('info', 18)) +
+      '<div>' + (passt
+        ? '<b>Ja.</b> Mit diesem Passwort kommst du gerade in den Lehrkraft-Bereich.'
+        : '<b>Nein.</b> Das ist ein anderes Passwort als das aktuell hinterlegte – ' +
+          'genau richtig, wenn du es neu setzen willst.') + '</div>';
+  }
+
+  $('pw').addEventListener('input', rechnen);
+  $('kopieren').addEventListener('click', async () => {
+    if (!$('hash').value || $('hash').value === '—') { UI.meldung('Erst ein Passwort eintippen.', 'warn'); return; }
+    try { await navigator.clipboard.writeText($('hash').value); UI.meldung('Fingerabdruck kopiert.', 'gut'); }
+    catch (e) { $('hash').select(); UI.meldung('Bitte von Hand kopieren (Strg + C).', 'warn'); }
+  });
+  setTimeout(() => $('pw').focus(), 120);
+})();
+</script>
+</body>
+</html>
