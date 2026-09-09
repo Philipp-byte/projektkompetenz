@@ -7,6 +7,3 @@ desktop.ini
 .vscode/
 .idea/
 *~
-
-# Arbeitskopien der QR-Codes im Hauptordner (Original liegt in assets/)
-/QR-Code*.png
